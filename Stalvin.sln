@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stalvin.Server", "Stalvin\Server\Stalvin.Server.csproj", "{268DE714-1B65-4A38-B64C-EBDE00869843}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stalvin.Server", "Stalvin\Server\Stalvin.Server.csproj", "{268DE714-1B65-4A38-B64C-EBDE00869843}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stalvin.Client", "Stalvin\Client\Stalvin.Client.csproj", "{B25346B0-3827-4F28-979F-C9478FDF6ABA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stalvin.Client", "Stalvin\Client\Stalvin.Client.csproj", "{B25346B0-3827-4F28-979F-C9478FDF6ABA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stalvin.Shared", "Stalvin\Shared\Stalvin.Shared.csproj", "{5609888E-7074-42F5-9166-F2773D9C9BA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stalvin.Shared", "Stalvin\Shared\Stalvin.Shared.csproj", "{5609888E-7074-42F5-9166-F2773D9C9BA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

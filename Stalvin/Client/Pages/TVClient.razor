@@ -5,12 +5,11 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IAsyncDisposable
 
-<h3>TVClient</h3>
-<button @onclick="StartTimer">Start timer</button>
-<h2 role="status">current time: @String.Format(@"{0:mm\:ss\.ff}", startTime)</h2>
+<PageTitle>Remaining Time</PageTitle>
+<h2 role="status">remaining time: @String.Format(@"{0:mm\:ss\.ff}", startTime)</h2>
 
 @code {
-    private TimeSpan startTime = new TimeSpan(0, 1, 0, 0,0);
+    private TimeSpan startTime;
     private System.Timers.Timer aTimer = new System.Timers.Timer(10);
     private HubConnection? hubConnection;
 
@@ -23,6 +22,24 @@
         aTimer.Enabled = true;
     }
 
+    public async void SubtractTime(int minutes, int seconds) {        
+        startTime = startTime.Subtract(new TimeSpan(0, 0, minutes, seconds, 0));
+
+        int gameDuration = 0;
+        if (await localStorage.ContainKeyAsync("gameDuration"))
+        {
+            string durationString = await localStorage.GetItemAsStringAsync("gameDuration");
+            gameDuration = Convert.ToInt32(durationString);
+        }
+        else
+        {
+            gameDuration = 3600;
+        }
+
+        gameDuration -= (minutes * 60) + seconds;
+        await localStorage.SetItemAsStringAsync("gameDuration", gameDuration.ToString());
+    }
+
     private void OnTimedEvent(Object? source, ElapsedEventArgs e)
     {
         startTime = startTime.Subtract(new TimeSpan(0, 0, 0, 0, 10));
@@ -32,15 +49,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Get the start time
-        // add 60 minutes to get the supposed end time
-        // then subtract the current time from the end time
-        // to get the remaining time
-        string startTimeString = await localStorage.GetItemAsStringAsync("Start time");
-        long endTimeEpoch = Convert.ToInt64(startTimeString) + 3600;
-        long currentTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds();
-        startTime = new TimeSpan(0, 0, (int)(endTimeEpoch - currentTimeEpoch));
-
+        await CalcStartTime();
         StartTimer();
 
         hubConnection = new HubConnectionBuilder()
@@ -54,7 +63,26 @@
         await hubConnection.StartAsync();
 
     }
+    private async Task CalcStartTime() {
+        // Get the start time
+        // add 60 minutes to get the supposed end time
+        // then subtract the current time from the end time
+        // to get the remaining time
+        string startTimeString = await localStorage.GetItemAsStringAsync("Start time");
 
+        int gameDuration = 0;
+        if (await localStorage.ContainKeyAsync("gameDuration")){
+            string durationString = await localStorage.GetItemAsStringAsync("gameDuration");
+            gameDuration = Convert.ToInt32(durationString);
+        } 
+        else {
+            gameDuration = 3600;
+        }
+
+        long endTimeEpoch = Convert.ToInt64(startTimeString) + gameDuration;
+        long currentTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds();
+        startTime = new TimeSpan(0, 0, (int)(endTimeEpoch - currentTimeEpoch));
+    }
     public bool IsConnected =>
        hubConnection?.State == HubConnectionState.Connected;
 
