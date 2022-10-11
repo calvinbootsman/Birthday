@@ -20,7 +20,7 @@ namespace Stalvin.Server.Hubs
 
         public async Task SendQuestion(string user, string question, List<string> answers)
         {
-            await Clients.All.SendAsync("Question", "user 5", question, answers);
+            await Clients.All.SendAsync("Question", user, question, answers);
         }
 
         public async Task SendAnswer(string answer)
