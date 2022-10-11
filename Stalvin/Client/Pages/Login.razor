@@ -18,28 +18,18 @@
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
             .Build();
-        hubConnection.On<string>("ReceiveMessage", async (user) =>
-      {
-          var encodedMsg = $"{user}";
-          if (user == userName) {
-              //user is identified
-              // so now we store it.
-              Console.WriteLine("Verified!");
-              await localStorage.SetItemAsStringAsync("User", userName);
-              Navigation.NavigateTo("/");
-          }
-          StateHasChanged();
-      });
+       
         hubConnection.On<string, bool>("IsNameAddedMessage", async (user, isAdded) =>
         {
-            var encodedMsg = $"{user}";
             if (user == userName && isAdded)
             {
-                //user is identified
+                // user is identified
                 // so now we store it.
                 Console.WriteLine("Verified!");
                 await localStorage.SetItemAsStringAsync("User", userName);
+                Navigation.NavigateTo("/");
             }
+
             UserError = isAdded;
             StateHasChanged();
         });

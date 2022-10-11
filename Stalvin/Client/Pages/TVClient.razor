@@ -2,6 +2,7 @@
 @using System.Timers
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IAsyncDisposable
 
 <h3>TVClient</h3>
@@ -12,7 +13,7 @@
     private TimeSpan startTime = new TimeSpan(0, 1, 0, 0,0);
     private System.Timers.Timer aTimer = new System.Timers.Timer(10);
     private HubConnection? hubConnection;
-    
+
     // Hook up the Elapsed event for the timer.
 
     private void StartTimer()
@@ -29,8 +30,19 @@
         this.StateHasChanged();
     }
 
-     protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        // Get the start time
+        // add 60 minutes to get the supposed end time
+        // then subtract the current time from the end time
+        // to get the remaining time
+        string startTimeString = await localStorage.GetItemAsStringAsync("Start time");
+        long endTimeEpoch = Convert.ToInt64(startTimeString) + 3600;
+        long currentTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds();
+        startTime = new TimeSpan(0, 0, (int)(endTimeEpoch - currentTimeEpoch));
+
+        StartTimer();
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
             .Build();
@@ -42,6 +54,7 @@
         await hubConnection.StartAsync();
 
     }
+
     public bool IsConnected =>
        hubConnection?.State == HubConnectionState.Connected;
 

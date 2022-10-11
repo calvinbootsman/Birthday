@@ -9,12 +9,20 @@
 {
     <p>@s</p>
 }
+<button @onclick="TVClientPage">Start!</button>
 @code {
     private HubConnection? hubConnection;
     private List<string> Users = new List<string>();
 
     protected override async Task OnInitializedAsync()
-    {
+    {        
+        var keys = await localStorage.KeysAsync();
+
+        foreach (string s in keys) {
+            var value = await localStorage.GetItemAsStringAsync(s);
+            if (value == "added")
+                Users.Add(s);
+        }
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
             .Build();
@@ -24,18 +32,18 @@
 
            if (string.IsNullOrEmpty(test)) 
            {
-                var encodedMsg = $"{user}";
-                Users.Add(encodedMsg);
+               var encodedMsg = $"{user}";
+               Users.Add(encodedMsg);
                await localStorage.SetItemAsStringAsync(user, "added");
                await hubConnection.SendAsync("IsNameAdded", user, true);
                StateHasChanged();
-            }
-            else {
+           }
+           else {
                if (hubConnection is not null)
                {
                    await hubConnection.SendAsync("IsNameAdded", user, false);
                }
-            }
+           }
        });
         await hubConnection.StartAsync();
 
@@ -49,5 +57,13 @@
         {
             await hubConnection.DisposeAsync();
         }
+    }
+
+    public async Task TVClientPage() {
+        var currenTime = DateTimeOffset.Now;
+
+        await localStorage.SetItemAsStringAsync("Start time", currenTime.ToUnixTimeSeconds().ToString());
+        await localStorage.SetItemAsStringAsync("Current game", "game 1");
+        Navigation.NavigateTo("/TVClient");
     }
 }
