@@ -1,0 +1,57 @@
+﻿@page "/LocalStorageEditor"
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+<h3>LocalStorageEditor</h3>
+<table>
+    <tr>
+        <th>Key</th>
+        <th>Value</th>
+        <th>New value</th>
+        <th>Delete</th>
+    </tr>
+    @foreach (var item in stored) {
+        <tr>
+            <th>@item.key</th>
+            <td>@item.value</td>
+            <td><input type="text" @bind="item.value"/></td>
+            <td><button @onclick="@(e => DeleteFromDict(item.key))" >Delete</button></td>
+        </tr>
+    }
+</table>
+<button @onclick="SaveDict">save</button>
+@code {
+    class KeyValue {
+        public string key { get; set; } = string.Empty;
+        public string value { get; set; } = string.Empty;
+    }
+    private List<KeyValue> stored = new List<KeyValue>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitDict();
+        StateHasChanged();
+    }
+
+    private async Task InitDict(){
+        stored.Clear();
+        var keys = await localStorage.KeysAsync();
+        foreach(string key in keys) {
+            string value = await localStorage.GetItemAsStringAsync(key);
+            stored.Add(new KeyValue { key = key, value = value });
+        }
+    }
+    private async Task SaveDict() {
+        foreach (KeyValue kv in stored) {
+            await localStorage.SetItemAsStringAsync(kv.key, kv.value);            
+        }
+    }
+
+    private async Task DeleteFromDict(string key) {
+        for (int i = 0; i < stored.Count; i++) {
+            if (stored[i].key == key) {
+                stored.RemoveAt(i);
+                await localStorage.RemoveItemAsync(key);
+            }
+        }
+    }
+}
