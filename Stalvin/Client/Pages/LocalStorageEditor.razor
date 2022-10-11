@@ -11,7 +11,7 @@
     </tr>
     @foreach (var item in stored) {
         <tr>
-            <th>@item.key</th>
+            <td>@item.key</td>
             <td>@item.value</td>
             <td><input type="text" @bind="item.value"/></td>
             <td><button @onclick="@(e => DeleteFromDict(item.key))" >Delete</button></td>
