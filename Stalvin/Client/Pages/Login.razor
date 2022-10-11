@@ -1,0 +1,70 @@
+﻿@page "/Login"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@implements IAsyncDisposable
+
+<h3>Login</h3>
+<label>Your name:</label>
+<input @bind="userName" />
+<button @onclick="Send">Sumbit</button>
+<label hidden=@UserError>Error!</label>
+@code {
+    private HubConnection? hubConnection;
+    private string? userName;
+    private bool UserError = true;
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+            .Build();
+        hubConnection.On<string>("ReceiveMessage", async (user) =>
+      {
+          var encodedMsg = $"{user}";
+          if (user == userName) {
+              //user is identified
+              // so now we store it.
+              Console.WriteLine("Verified!");
+              await localStorage.SetItemAsStringAsync("User", userName);
+              Navigation.NavigateTo("/");
+          }
+          StateHasChanged();
+      });
+        hubConnection.On<string, bool>("IsNameAddedMessage", async (user, isAdded) =>
+        {
+            var encodedMsg = $"{user}";
+            if (user == userName && isAdded)
+            {
+                //user is identified
+                // so now we store it.
+                Console.WriteLine("Verified!");
+                await localStorage.SetItemAsStringAsync("User", userName);
+            }
+            UserError = isAdded;
+            StateHasChanged();
+        });
+        await hubConnection.StartAsync();
+
+        string test = await localStorage.GetItemAsStringAsync("User");
+        if (!string.IsNullOrEmpty(test)) userName = test;
+    }
+
+    private async Task Send()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("AddUser", userName);
+        }
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

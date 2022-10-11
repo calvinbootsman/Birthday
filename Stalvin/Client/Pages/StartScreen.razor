@@ -1,0 +1,53 @@
+﻿@page "/startscreen"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@implements IAsyncDisposable
+
+<h3>Help Stalvin!</h3>
+@foreach (string s in Users)
+{
+    <p>@s</p>
+}
+@code {
+    private HubConnection? hubConnection;
+    private List<string> Users = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+            .Build();
+        hubConnection.On<string>("ReceiveMessage", async(user) =>
+       {
+           string test = await localStorage.GetItemAsStringAsync(user);
+
+           if (string.IsNullOrEmpty(test)) 
+           {
+                var encodedMsg = $"{user}";
+                Users.Add(encodedMsg);
+               await localStorage.SetItemAsStringAsync(user, "added");
+               await hubConnection.SendAsync("IsNameAdded", user, true);
+               StateHasChanged();
+            }
+            else {
+               if (hubConnection is not null)
+               {
+                   await hubConnection.SendAsync("IsNameAdded", user, false);
+               }
+            }
+       });
+        await hubConnection.StartAsync();
+
+    }
+    public bool IsConnected =>
+       hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

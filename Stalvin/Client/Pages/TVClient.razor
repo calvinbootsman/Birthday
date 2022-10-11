@@ -1,0 +1,55 @@
+﻿@page "/TVClient"
+@using System.Timers
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<h3>TVClient</h3>
+<button @onclick="StartTimer">Start timer</button>
+<h2 role="status">current time: @String.Format(@"{0:mm\:ss\.ff}", startTime)</h2>
+
+@code {
+    private TimeSpan startTime = new TimeSpan(0, 1, 0, 0,0);
+    private System.Timers.Timer aTimer = new System.Timers.Timer(10);
+    private HubConnection? hubConnection;
+    
+    // Hook up the Elapsed event for the timer.
+
+    private void StartTimer()
+    {
+        aTimer.Elapsed += OnTimedEvent;
+        aTimer.AutoReset = true;
+        aTimer.Enabled = true;
+    }
+
+    private void OnTimedEvent(Object? source, ElapsedEventArgs e)
+    {
+        startTime = startTime.Subtract(new TimeSpan(0, 0, 0, 0, 10));
+
+        this.StateHasChanged();
+    }
+
+     protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+            .Build();
+        hubConnection.On<string>("ReceiveMessage", (user) =>
+       {
+           var encodedMsg = $"{user}";
+           StateHasChanged();
+       });
+        await hubConnection.StartAsync();
+
+    }
+    public bool IsConnected =>
+       hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}
