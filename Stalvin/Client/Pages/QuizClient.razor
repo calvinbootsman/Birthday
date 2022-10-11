@@ -32,8 +32,9 @@
        {
 
            var currentUser = await localStorage.GetItemAsStringAsync("User");
-           currentQuestion.Question = question;
+
            if (user == currentUser){
+               currentQuestion.Question = question;
                if (answers.Count > 0)
                {                   
                    currentQuestion.Answers = answers;
@@ -42,7 +43,10 @@
                {
                    currentQuestion.Answers.Clear();
                }
-           }           
+           }
+           else {
+               currentQuestion.Question = "";
+           }
 
            StateHasChanged();
        });
