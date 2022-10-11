@@ -1,0 +1,59 @@
+﻿@page "/game1Client"
+@using Microsoft.AspNetCore.SignalR.Client
+@using models
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<h3>QuizClient</h3>
+<h2>User:</h2>
+<label> @thisUser</label>
+@if (currentQuestion.Question != ""){
+    <h4>@currentQuestion.Question</h4>
+    @if(currentQuestion.Answers.Count() > 0) {
+        @foreach (string s in currentQuestion.Answers) {
+            <label>@s</label>
+        }
+    } else {
+        <input type="text"/>
+    }
+}
+@code {
+    private HubConnection? hubConnection;
+    private QuestionModel currentQuestion = new QuestionModel();
+    private string thisUser = "";
+    protected override async Task OnInitializedAsync()
+    {
+        thisUser = await localStorage.GetItemAsStringAsync("User");
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+            .Build();
+        hubConnection.On<string, string, List<string>>("Question",async (user, question, answers) =>
+       {
+
+           var currentUser = await localStorage.GetItemAsStringAsync("User");
+           currentQuestion.Question = question;
+           if (user == currentUser){
+               if (answers.Count > 0)
+               {                   
+                   currentQuestion.Answers = answers;
+               }
+               else
+               {
+                   currentQuestion.Answers.Clear();
+               }
+           }           
+
+           StateHasChanged();
+       });
+        await hubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

@@ -1,0 +1,123 @@
+﻿@page "/game1TV"
+@using Microsoft.AspNetCore.SignalR.Client
+@using models
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<TVClient @ref="client"/>
+<h3>Quiz</h3>
+@if (question != null)
+{
+    <h4>@question.Question;</h4>
+}
+<button @onclick="subtracttime">Subtract time</button>
+<button @onclick="NextQuestion">Next question</button>
+<QuizClient/>
+@code {
+    private List<string> users = new List<string>();
+    private HubConnection? hubConnection;
+    private List<QuestionModel> questions = QuestionModel.GetRandomQuestions();
+    private int totalQuestion = 0;
+    private int answeredQuestions = 0;
+    QuestionModel? question;
+    TVClient client;
+    private Random rnd = new Random();
+    public void subtracttime()
+    {
+        client.SubtractTime(5, 0);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        InitUsers();
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+            .Build();
+        hubConnection.On<string>("Answer", (answer) =>
+       {
+           if (question.Answer == answer)
+           {
+
+           }
+           else {
+               client.SubtractTime(5, 0);
+           }
+
+           answeredQuestions++;
+           NextQuestion();
+           StateHasChanged();
+       });
+        await hubConnection.StartAsync();
+    }
+
+    private async Task InitUsers() {
+        var keys = await localStorage.KeysAsync();
+        users.Clear();
+        foreach (string s in keys)
+        {
+            var value = await localStorage.GetItemAsStringAsync(s);
+            if (value == "added"){
+                var quizUser = s+ 'q';
+                users.Add(quizUser);
+                await localStorage.SetItemAsStringAsync(quizUser, "0");
+            }
+        }
+
+    }
+
+    private async Task NextQuestion() {
+        question = questions.FirstOrDefault();
+        if (question != null)
+        {
+            questions.RemoveAt(0);
+            string user = await GetRandomUser();
+            user = user.Remove(user.Length - 1);
+            if (hubConnection is not null)
+            {
+                await hubConnection.SendAsync("SendQuestion", user, question.Question, question.Answers);
+            }
+        }
+        else {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+    private async Task<string> GetRandomUser() {
+        if (users.Count > 0)
+        {
+            int index = rnd.Next(users.Count);
+            var user = users[index];
+            var count = await localStorage.GetItemAsStringAsync(user);
+            while (count is "2")
+            {
+                users.RemoveAt(index);
+                if (users.Count > 0)
+                {
+                    index = rnd.Next(users.Count);
+                    user = users[index];
+                    count = await localStorage.GetItemAsStringAsync(user);
+                }
+                else
+                {
+                    Navigation.NavigateTo("/");
+                }
+            }
+            int countint = Convert.ToInt32(count);
+            countint++;
+            await localStorage.SetItemAsStringAsync(user, countint.ToString() );
+            return user;
+        }
+        else {
+            Navigation.NavigateTo("/");
+        }
+        return "";
+    }
+}
