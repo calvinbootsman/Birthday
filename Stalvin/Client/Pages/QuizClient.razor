@@ -11,17 +11,24 @@
 @if (currentQuestion.Question != ""){
     <h4>@currentQuestion.Question</h4>
     @if(currentQuestion.Answers.Count() > 0) {
+        
         @foreach (string s in currentQuestion.Answers) {
-            <label>@s</label>
+            <div class="card" style="width: 25rem">
+                <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
+            </div>
+          
         }
     } else {
-        <input type="text"/>
+        <input type="text" @bind="textAnswer" />
+        <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
     }
+    
 }
 @code {
     private HubConnection? hubConnection;
     private QuestionModel currentQuestion = new QuestionModel();
     private string thisUser = "";
+    private string textAnswer = "";
     protected override async Task OnInitializedAsync()
     {
         thisUser = await localStorage.GetItemAsStringAsync("User");
@@ -58,6 +65,21 @@
         if (hubConnection is not null)
         {
             await hubConnection.DisposeAsync();
+        }
+    }
+
+    private async Task SendMultipleChoiceAnswer(string answer){
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendAnswer", answer);
+        }
+    }
+
+    private async Task SendTextAnswer()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendAnswer", textAnswer);
         }
     }
 }

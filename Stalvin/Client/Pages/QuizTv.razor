@@ -21,7 +21,7 @@
     private int totalQuestion = 0;
     private int answeredQuestions = 0;
     QuestionModel? question;
-    TVClient client;
+    TVClient client = new TVClient();
     private Random rnd = new Random();
     public void subtracttime()
     {
@@ -29,22 +29,25 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        InitUsers();
+        await InitUsers();
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
             .Build();
-        hubConnection.On<string>("Answer", (answer) =>
+        hubConnection.On<string>("Answer",async (answer) =>
        {
-           if (question.Answer == answer)
-           {
+           if (question != null) {
+               if (question.Answer == answer)
+               {
 
-           }
-           else {
-               client.SubtractTime(5, 0);
-           }
+               }
+               else
+               {
+                   client.SubtractTime(5, 0);
+               }
+           }           
 
            answeredQuestions++;
-           NextQuestion();
+           await NextQuestion();
            StateHasChanged();
        });
         await hubConnection.StartAsync();
@@ -78,7 +81,7 @@
             }
         }
         else {
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo("/");            
         }
     }
 
