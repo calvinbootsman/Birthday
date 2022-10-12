@@ -1,74 +1,94 @@
 ﻿@page "/game1TV"
 @using Microsoft.AspNetCore.SignalR.Client
+@using System.Timers
 @using models
 @implements IAsyncDisposable
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+<style>
+    body {
+        background: @backgroundColor;
+    }
+</style>
+<TVClient @ref="client" />
+<div style="text-align:center;">
+    <h1>Quiz</h1>
+    @if (question != null)
+    {
+        <h2>@question.Question;</h2>
+        <h4>question @answeredQuestions/@totalQuestion</h4>
+    }
+    <!-- <button @onclick="subtracttime">Subtract time</button>
+     <button @onclick="NextQuestion">Next question</button> --->
+</div>
 
-<TVClient @ref="client"/>
-<h3>Quiz</h3>
-@if (question != null)
-{
-    <h4>@question.Question;</h4>
-}
-<button @onclick="subtracttime">Subtract time</button>
-<button @onclick="NextQuestion">Next question</button>
-<QuizClient/>
 @code {
     private List<string> users = new List<string>();
     private HubConnection? hubConnection;
     private List<QuestionModel> questions = QuestionModel.GetRandomQuestions();
-    private int totalQuestion = 0;
+    private int totalQuestion = QuestionModel.GetRandomQuestions().Count();
     private int answeredQuestions = 0;
+    private string backgroundColor = "white";
     QuestionModel? question;
-    TVClient client = new TVClient();
+    TVClient? client = new TVClient();
     private Random rnd = new Random();
     public void subtracttime()
     {
-        client.SubtractTime(5, 0);
+        if (client is not null)
+            client.SubtractTime(5, 0);
     }
     protected override async Task OnInitializedAsync()
     {
         await InitUsers();
+        totalQuestion = users.Count * 3;
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
             .Build();
-        hubConnection.On<string>("Answer",async (answer) =>
+        hubConnection.On<string>("Answer", async (answer) =>
        {
-           if (question != null) {
+           if (question != null)
+           {                      
                if (question.Answer == answer)
                {
-
+                   AnimateBackground("Green");
                }
                else
                {
-                   client.SubtractTime(5, 0);
+                   AnimateBackground("Red");
+
+                   if (client is not null)
+                   {
+                       client.SubtractTime(5, 0);
+                   }
                }
-           }           
+           }
 
            answeredQuestions++;
            await NextQuestion();
            StateHasChanged();
        });
         await hubConnection.StartAsync();
+        await NextQuestion();
     }
 
-    private async Task InitUsers() {
+    private async Task InitUsers()
+    {
         var keys = await localStorage.KeysAsync();
         users.Clear();
         foreach (string s in keys)
         {
             var value = await localStorage.GetItemAsStringAsync(s);
-            if (value == "added"){
-                var quizUser = s+ 'q';
+            if (value == "added")
+            {
+                var quizUser = s + 'q';
                 users.Add(quizUser);
                 await localStorage.SetItemAsStringAsync(quizUser, "0");
             }
         }
-
     }
 
-    private async Task NextQuestion() {
+    private async Task NextQuestion()
+    {
         question = questions.FirstOrDefault();
         if (question != null)
         {
@@ -80,8 +100,9 @@
                 await hubConnection.SendAsync("SendQuestion", user, question.Question, question.Answers);
             }
         }
-        else {
-            Navigation.NavigateTo("/");            
+        else
+        {
+            Navigation.NavigateTo("/");
         }
     }
 
@@ -93,13 +114,14 @@
         }
     }
 
-    private async Task<string> GetRandomUser() {
+    private async Task<string> GetRandomUser()
+    {
         if (users.Count > 0)
         {
             int index = rnd.Next(users.Count);
             var user = users[index];
             var count = await localStorage.GetItemAsStringAsync(user);
-            while (count is "2")
+            while (count is "3")
             {
                 users.RemoveAt(index);
                 if (users.Count > 0)
@@ -116,12 +138,28 @@
             }
             int countint = Convert.ToInt32(count);
             countint++;
-            await localStorage.SetItemAsStringAsync(user, countint.ToString() );
+            await localStorage.SetItemAsStringAsync(user, countint.ToString());
             return user;
         }
-        else {
+        else
+        {
             Navigation.NavigateTo("/");
         }
         return "";
+    }
+    
+    public void AnimateBackground(string color) {
+        System.Timers.Timer t = new System.Timers.Timer();
+        t.Elapsed += (sender, args) =>
+        {
+            backgroundColor = "white";
+            t.Enabled = false;
+            this.StateHasChanged();
+        };
+
+        t.Interval = 2000;
+        t.AutoReset = false;
+        t.Enabled = true;
+        backgroundColor = color;
     }
 }

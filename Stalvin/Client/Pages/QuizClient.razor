@@ -5,23 +5,28 @@
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<h3>QuizClient</h3>
-<h2>User:</h2>
-<label> @thisUser</label>
-@if (currentQuestion.Question != ""){
-    <h4>@currentQuestion.Question</h4>
-    @if(currentQuestion.Answers.Count() > 0) {
+@if (gameStarted) {
+    <h3>Quiz!</h3>
+
+    @if (currentQuestion.Question != ""){
+        <h4>@currentQuestion.Question</h4>
+        @if(currentQuestion.Answers.Count() > 0) {
         
-        @foreach (string s in currentQuestion.Answers) {
-            <div class="card" style="width: 25rem">
-                <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
-            </div>
+            @foreach (string s in currentQuestion.Answers) {
+                <div class="card" style="width: 25rem">
+                    <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
+                </div>
           
+            }
+        } else {
+            <input type="text" @bind="textAnswer" />
+            <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
         }
-    } else {
-        <input type="text" @bind="textAnswer" />
-        <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
+    
     }
+}
+else  {
+    <h1 style="text-align:center;">Waiting for game to start</h1>
     
 }
 @code {
@@ -29,6 +34,7 @@
     private QuestionModel currentQuestion = new QuestionModel();
     private string thisUser = "";
     private string textAnswer = "";
+    private bool gameStarted = false;
     protected override async Task OnInitializedAsync()
     {
         thisUser = await localStorage.GetItemAsStringAsync("User");
@@ -37,10 +43,10 @@
             .Build();
         hubConnection.On<string, string, List<string>>("Question",async (user, question, answers) =>
        {
-
+           gameStarted = true;
            var currentUser = await localStorage.GetItemAsStringAsync("User");
 
-           if (user == currentUser){
+           if (user == currentUser){               
                currentQuestion.Question = question;
                if (answers.Count > 0)
                {                   
