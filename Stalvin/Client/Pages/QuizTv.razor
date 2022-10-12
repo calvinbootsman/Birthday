@@ -21,7 +21,9 @@
     <!-- <button @onclick="subtracttime">Subtract time</button>
      <button @onclick="NextQuestion">Next question</button> --->
 </div>
-
+@if (quizDone) {
+    <button @onclick="NextPage" class="btn btn-primary">Next page</button>
+}
 @code {
     private List<string> users = new List<string>();
     private HubConnection? hubConnection;
@@ -32,6 +34,7 @@
     QuestionModel? question;
     TVClient? client = new TVClient();
     private Random rnd = new Random();
+    private bool quizDone = false;
     public void subtracttime()
     {
         if (client is not null)
@@ -102,7 +105,7 @@
         }
         else
         {
-            Navigation.NavigateTo("/");
+            quizDone = true;
         }
     }
 
@@ -132,7 +135,7 @@
                 }
                 else
                 {
-                    Navigation.NavigateTo("/");
+                    quizDone = true;
                     break;
                 }
             }
@@ -143,12 +146,12 @@
         }
         else
         {
-            Navigation.NavigateTo("/");
+            quizDone = true;
         }
         return "";
     }
     
-    public void AnimateBackground(string color) {
+    private void AnimateBackground(string color) {
         System.Timers.Timer t = new System.Timers.Timer();
         t.Elapsed += (sender, args) =>
         {
@@ -161,5 +164,9 @@
         t.AutoReset = false;
         t.Enabled = true;
         backgroundColor = color;
+    }
+
+    private void NextPage() {
+        Navigation.NavigateTo("/");
     }
 }
