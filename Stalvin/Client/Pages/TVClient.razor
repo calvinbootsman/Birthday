@@ -5,8 +5,11 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IAsyncDisposable
 
-<PageTitle>Remaining Time</PageTitle>
-<h2 role="status">remaining time: @String.Format(@"{0:mm\:ss\.ff}", startTime)</h2>
+<div style="text-align:center;">
+    <PageTitle>Remaining Time</PageTitle>
+    <h1 role="status">remaining time: @String.Format(@"{0:mm\:ss\.ff}", startTime)</h1>
+</div>
+
 
 @code {
     private TimeSpan startTime;
