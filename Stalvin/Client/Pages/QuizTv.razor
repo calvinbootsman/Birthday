@@ -18,8 +18,6 @@
         <h2>@question.Question;</h2>
         <h4>question @answeredQuestions/@totalQuestion</h4>
     }
-    <!-- <button @onclick="subtracttime">Subtract time</button>
-     <button @onclick="NextQuestion">Next question</button> --->
 </div>
 
 @code {
@@ -39,7 +37,6 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        AnimateBackground("linear-gradient(180deg, rgba(105,187,88,1) 0%, rgba(139,255,115,1) 100%);");
         await InitUsers();
         totalQuestion = users.Count * 3;
         hubConnection = new HubConnectionBuilder()
