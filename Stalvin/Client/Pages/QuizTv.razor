@@ -46,7 +46,7 @@
        {
            if (question != null)
            {                      
-               if (question.Answer == answer)
+               if (question.Answer.ToUpper() == answer.ToUpper())
                {
                    AnimateBackground("linear-gradient(180deg, rgba(105,187,88,1) 0%, rgba(139,255,115,1) 100%);");
                }
