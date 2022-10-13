@@ -10,20 +10,20 @@
         public static List<QuestionModel> GetRandomQuestions()
         {
             List<QuestionModel> questionList = new List<QuestionModel>();
-            questionList.Add(new QuestionModel { QuestionId = "0", Question = "question1", Answer = "A" });
-            questionList.Add(new QuestionModel { QuestionId = "1", Question = "question2", Answer = "B", Answers = {"answer a", "answer b", "answer c" } });
-            questionList.Add(new QuestionModel { QuestionId = "2", Question = "question3", Answer = "C" });
-            questionList.Add(new QuestionModel { QuestionId = "3", Question = "question4", Answer = "D", Answers = { "answer a", "answer b", "answer c", "answer d" } });
-            questionList.Add(new QuestionModel { QuestionId = "4", Question = "question5", Answer = "E", Answers = { "answer a", "answer b" } });
-            questionList.Add(new QuestionModel { QuestionId = "5", Question = "question6", Answer = "F" });
-            questionList.Add(new QuestionModel { QuestionId = "6", Question = "question7", Answer = "G" });
-            questionList.Add(new QuestionModel { QuestionId = "7", Question = "question8", Answer = "H", Answers = { "answer a", "answer b", "answer c" } });
-            questionList.Add(new QuestionModel { QuestionId = "8", Question = "question9", Answer = "I" });
-            questionList.Add(new QuestionModel { QuestionId = "9", Question = "question10", Answer = "J", Answers = { "answer a", "answer b", "answer c", "answer d" } });
-            questionList.Add(new QuestionModel { QuestionId = "10", Question = "question11", Answer = "K", Answers = { "answer a", "answer b" } });
-            questionList.Add(new QuestionModel { QuestionId = "11", Question = "question12", Answer = "L" });
-            questionList.Add(new QuestionModel { QuestionId = "12", Question = "question13", Answer = "M" });
-            questionList.Add(new QuestionModel { QuestionId = "13", Question = "question14", Answer = "N", Answers = { "answer a", "answer b", "answer c" } });
+            questionList.Add(new QuestionModel { QuestionId = "0", Question = "What is Calvin's middle name?", Answer = "quincy" });
+            questionList.Add(new QuestionModel { QuestionId = "1", Question = "When did Stalvin first Appear (DD/MM/YYYY)", Answer = "18/10/2019" });
+            questionList.Add(new QuestionModel { QuestionId = "2", Question = "We're breaking ❄️", Answer = "Vries" });
+            questionList.Add(new QuestionModel { QuestionId = "3", Question = "Which band was Calvin's first concert?", Answer = "Sick Puppies", Answers = { "Nickelback", "Sick Puppies", "Three Days Grace" } });
+            questionList.Add(new QuestionModel { QuestionId = "4", Question = "Who's the current president of Colombia", Answer = "Gustavo Petro", Answers = { "César Gaviria", "Gustavo Petro", "Ernesto Samper" } });
+            questionList.Add(new QuestionModel { QuestionId = "5", Question = "Rock Paper Scissor", Answer = "Paper", Answers = { "Rock", "Paper", "Scissor" } });
+            questionList.Add(new QuestionModel { QuestionId = "6", Question = "Best tricker of Team Freeze", Answer = "Calvin", Answers = { "Calvin", "Calvin", "Calvin", "Calvin" } });
+            questionList.Add(new QuestionModel { QuestionId = "7", Question = "What is Calvin's next stage on the Pieterpad?", Answer = "Hellendoorn - Holten", Answers = { "Coevorden - Hardenberg","Hardenberg - Ommen", "Ommen - Hellendoorn", "Hellendoorn - Holten" } });
+            questionList.Add(new QuestionModel { QuestionId = "8", Question = "5 * (2 + 8 / 2) / 4 - 2", Answer = "5,5" });
+            questionList.Add(new QuestionModel { QuestionId = "9", Question = "What is the capital of Chad", Answer = "N'Djamena", Answers = { "N'Djamena", "Abuja", "Bangui c", "Yaounde" } });
+            questionList.Add(new QuestionModel { QuestionId = "10", Question = "In tennis, what piece of fruit is found at the top of the men’s Wimbledon trophy?", Answer = "Pineapple", Answers = { "Apple", "Orange",  "Pear", "Pineapple" } });
+            questionList.Add(new QuestionModel { QuestionId = "11", Question = "What is the average male height in the netherlands (give your answer as: ###  e.g.: 152)", Answer = "183" });
+            questionList.Add(new QuestionModel { QuestionId = "12", Question = "What is Calvin's height (give your answer as: ###  e.g.: 152)", Answer = "164" });
+            questionList.Add(new QuestionModel { QuestionId = "13", Question = "Which brand is Calvin's car", Answer = "Lancia", Answers = { "Dacia", "Fiat", "lancia", "Tesla" } });
             questionList.Add(new QuestionModel { QuestionId = "14", Question = "question15", Answer = "O" });
             questionList.Add(new QuestionModel { QuestionId = "15", Question = "question16", Answer = "P", Answers = { "answer a", "answer b", "answer c", "answer d" } });
             questionList.Add(new QuestionModel { QuestionId = "16", Question = "question17", Answer = "Q", Answers = { "answer a", "answer b" } });
@@ -37,6 +37,4 @@
             return questionList;
         }
     }
-
-
 }
