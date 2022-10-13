@@ -5,36 +5,44 @@
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-@if (gameStarted) {
-    <h3>Quiz!</h3>
+<div style="text-align:center">
+    @if (gameStarted) {
+        <h3>Quiz!</h3>
 
-    @if (currentQuestion.Question != ""){
-        <h4>@currentQuestion.Question</h4>
-        @if(currentQuestion.Answers.Count() > 0) {
+        @if (currentQuestion.Question != ""){
+            <h4>@currentQuestion.Question</h4>
+            @if(currentQuestion.Answers.Count() > 0) {
         
-            @foreach (string s in currentQuestion.Answers) {
-                <div class="card" style="width: 25rem">
-                    <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
-                </div>
+                @foreach (string s in currentQuestion.Answers) {
+                    <div class="card" style="width: 25rem">
+                        <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
+                    </div>
           
+                }
+            } else {
+                <input type="text" @bind="textAnswer" />
+                <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
             }
-        } else {
-            <input type="text" @bind="textAnswer" />
-            <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
+    
         }
+    }
+    else  {
+        <h1 style="text-align:center;">Waiting for game to start</h1>
     
     }
-}
-else  {
-    <h1 style="text-align:center;">Waiting for game to start</h1>
-    
-}
+
+    @if (showExplanation) {
+        <p style="color:#353535;" >Try to guess the correct answer. The answer is capital insensitive. For every wrong answer there's a penalty of 5 minutes.'</p>
+    }
+</div>
 @code {
     private HubConnection? hubConnection;
     private QuestionModel currentQuestion = new QuestionModel();
     private string thisUser = "";
     private string textAnswer = "";
     private bool gameStarted = false;
+    private bool showExplanation = true;
+
     protected override async Task OnInitializedAsync()
     {
         thisUser = await localStorage.GetItemAsStringAsync("User");
@@ -46,7 +54,8 @@ else  {
            gameStarted = true;
            var currentUser = await localStorage.GetItemAsStringAsync("User");
 
-           if (user == currentUser){               
+           if (user == currentUser){
+               showExplanation = false;
                currentQuestion.Question = question;
                if (answers.Count > 0)
                {                   
@@ -58,6 +67,7 @@ else  {
                }
            }
            else {
+               showExplanation = true;
                currentQuestion.Question = "";
            }
 
