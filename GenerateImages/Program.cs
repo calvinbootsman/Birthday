@@ -7,7 +7,7 @@ Console.WriteLine("Hello, World!");
 var files = Directory.GetFiles("C:\\Users\\calvi\\source\\repos\\Stalvin\\Stalvin\\Client\\wwwroot\\images");
 foreach(string file in files)
 {
-    if (file.EndsWith(".png"))
+    if (file.EndsWith(".png") || file.EndsWith(".jpg"))
     {
         Bitmap bmp = new Bitmap(file);
         int width = bmp.Width;
@@ -20,10 +20,19 @@ foreach(string file in files)
         }
         int divWidth = width / 3;
         int divHeight = height / 2;
-        string saveDirectory = file.Replace(".png", "");
+
+        string saveDirectory = "";
+        if (file.EndsWith(".png"))
+            saveDirectory = file.Replace(".png", "");
+        else
+            saveDirectory = file.Replace(".jpg", "");
         saveDirectory = saveDirectory.Remove(saveDirectory.Length - 2);
 
-        string saveFileName = Path.GetFileName(file).Replace(".png", "");
+        string saveFileName = "";
+        if (file.EndsWith(".png"))
+            saveFileName = Path.GetFileName(file).Replace(".png", "");
+        else
+            saveFileName = Path.GetFileName(file).Replace(".jpg", "");
 
         Directory.CreateDirectory(saveDirectory);
         for (int i = 0; i < 3; i++)

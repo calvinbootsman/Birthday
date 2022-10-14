@@ -38,9 +38,9 @@ namespace Stalvin.Server.Hubs
             await Clients.All.SendAsync("PictureAssignRoleMessage", user, index);
         }
 
-        public async Task NextPicture(int themeIndex, int pictureIndex)
+        public async Task NextPicture(string theme, int pictureIndex)
         {
-            await Clients.All.SendAsync("NextPictureMessage", themeIndex, pictureIndex);
+            await Clients.All.SendAsync("NextPictureMessage", theme, pictureIndex);
         }
 
     }

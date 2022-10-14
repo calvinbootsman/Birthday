@@ -82,7 +82,7 @@
            StateHasChanged();
        });
         hubConnection.On<string>("NextPageMessage", test => {
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo("/game2Client");
         });
         await hubConnection.StartAsync();
     }

@@ -6,18 +6,25 @@
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
+<style>
+    body {
+        background: @backgroundColor;
+    }
+</style>
+<TVClient @ref="client" />
 <h3>PicturesGameTv</h3>
 <p style="color:#353535;">Every 5 seconds a new picture is shown on your mobile phones. Together they form one single picture. All the pictures have an overlapping theme. Try to guess the correct theme. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
 
 @code {
     private System.Timers.Timer newPicTimer = new System.Timers.Timer(5000);
     private HubConnection? hubConnection;
-    private string[] AnswerList ={ "oslo", "test", "hoi" };
+    public string[] AnswerList = { "oslo", "test", "hoi" };
     private int themeIndex = 0;
     private int pictureIndex = 0;
-    private int totalThemes = 0;
-
+    private int totalThemes = 1;
+    private string backgroundColor = "white";
     private List<string> users = new List<string>();
+    TVClient? client = new TVClient();
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,11 +35,36 @@
              .Build();
         hubConnection.On<string>("Answer", async (answer) =>
         {
+            // correct answer
             if (AnswerList[themeIndex] == answer)
             {
+                AnimateBackground("linear-gradient(180deg, rgba(105,187,88,1) 0%, rgba(139,255,115,1) 100%);");
+
                 themeIndex++;
+
+                if (themeIndex == totalThemes)
+                {
+                    Navigation.NavigateTo("/game3TV");
+                    if (hubConnection is not null)
+                    {
+                        await hubConnection.SendAsync("GoToNextPage");
+                    }
+                }
+
             }
+            // incorrect answer
+            else
+            {
+                if (client is not null)
+                {
+                    client.SubtractTime(5, 0);
+                }
+                AnimateBackground("linear-gradient(180deg, rgba(187,88,88,1) 0%, rgba(255,115,115,1) 100%);");
+            }
+            this.StateHasChanged();
         });
+        await hubConnection.StartAsync();
+        await InitUsers();
     }
 
     private void StartTimer()
@@ -42,21 +74,18 @@
         newPicTimer.Enabled = true;
     }
 
-    private void OnTimedEvent(Object? source, ElapsedEventArgs e)
+    private async void OnTimedEvent(Object? source, ElapsedEventArgs e)
     {
-        NextPicture();
+        await NextPicture();
 
     }
 
-    private async Task NextPicture() {
-        //imageSrc = $"/images/{AnswerList[themeIndex]}/{AnswerList[themeIndex]}-{pictureIndex}-{0}.png";
+    private async Task NextPicture()
+    {
         pictureIndex++;
         if (pictureIndex == 4) pictureIndex = 0;
-        await hubConnection.SendAsync("NextPicture", themeIndex, pictureIndex);
-
-    }
-
-    private void NextTheme() {
+        if (hubConnection is not null)
+            await hubConnection.SendAsync("NextPicture", AnswerList[themeIndex], pictureIndex);
 
     }
 
@@ -64,17 +93,35 @@
     {
         var keys = await localStorage.KeysAsync();
         users.Clear();
-        int index = 0; 
+        int index = 0;
         foreach (string s in keys)
         {
             var value = await localStorage.GetItemAsStringAsync(s);
             if (value == "added")
-            {                
+            {
                 users.Add(s);
+                if (hubConnection is not null)
+                    await hubConnection.SendAsync("PictureAssignRole", s, index);
             }
-            await hubConnection.SendAsync("PictureAssignRole",s, index);
+            
             index++;
         }
+    }
+
+    private void AnimateBackground(string color)
+    {
+        System.Timers.Timer t = new System.Timers.Timer();
+        t.Elapsed += (sender, args) =>
+        {
+            backgroundColor = "white";
+            t.Enabled = false;
+            this.StateHasChanged();
+        };
+
+        t.Interval = 2000;
+        t.AutoReset = false;
+        t.Enabled = true;
+        backgroundColor = color;
     }
 
     public async ValueTask DisposeAsync()

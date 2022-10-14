@@ -5,12 +5,23 @@
 @implements IAsyncDisposable
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-<h3>PicturesGameClient</h3>
+
+@if (thisIndex >= 0 && thisIndex < 6) {
+    <img src="@imageSrc" alt="" style="display:block; width:100%"  />
+}
+@if (thisIndex == 6) {
+    <input type="text" @bind="textAnswer" />
+    <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
+    <p style="color:#353535;">Try to guess the correct answer. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
+}
 
 @code {
     private HubConnection? hubConnection;
     private string thisUser = "";
     private int thisIndex = -1;
+    private string imageSrc = "";
+    private string textAnswer = "";
+
     protected override async Task OnInitializedAsync()
     {     
         thisUser = await localStorage.GetItemAsStringAsync("User");
@@ -20,15 +31,22 @@
         hubConnection.On<string, int>("PictureAssignRoleMessage", (user, index) =>
         {
             if (thisUser == user) {
-                thisIndex = index; 
+                thisIndex = 6; 
+                StateHasChanged();
             }
         });
-        hubConnection.On<string, int>("PictureAssignRoleMessage", (user, index) =>
+        hubConnection.On<string, int>("NextPictureMessage", (theme, pictureIndex) =>
         {
-            if (thisUser == user) {
-                thisIndex = index; 
+            if (thisIndex >= 0 && thisIndex < 6 ){
+                imageSrc = $"/images/{theme}/{theme}-{pictureIndex}-{thisIndex}.png";
+                StateHasChanged();
             }
         });
+        hubConnection.On<string>("NextPageMessage", test =>
+        {
+            Navigation.NavigateTo("/game3Client");
+        });
+        await hubConnection.StartAsync();
     }
 
     public async ValueTask DisposeAsync()
@@ -38,4 +56,12 @@
             await hubConnection.DisposeAsync();
         }
     }
+    private async Task SendTextAnswer()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendAnswer", textAnswer);
+        }
+    }
+
 }
