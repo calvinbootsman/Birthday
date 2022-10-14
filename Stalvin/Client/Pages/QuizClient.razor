@@ -6,35 +6,40 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <div style="text-align:center">
-    @if (gameStarted) {
+    @if (gameStarted)
+    {
         <h3>Quiz!</h3>
 
-        @if (currentQuestion.Question != ""){
+        @if (currentQuestion.Question != "")
+        {
             <h4>@currentQuestion.Question</h4>
-            @if(currentQuestion.Answers.Count() > 0) {
-        
-                @foreach (string s in currentQuestion.Answers) {
+            @if (currentQuestion.Answers.Count() > 0)
+            {
+                @foreach (string s in currentQuestion.Answers)
+                {
                     <div class="card" style="width: 25rem">
                         <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
                     </div>
-          
                 }
-            } else {
+            }
+            else
+            {
                 <input type="text" @bind="textAnswer" />
                 <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
             }
-    
         }
     }
-    else  {
+    else
+    {
         <h1 style="text-align:center;">Waiting for game to start</h1>
-    
     }
 
-    @if (showExplanation) {
-        <p style="color:#353535;" >Try to guess the correct answer. The answer is capital insensitive. For every wrong answer there's a penalty of 5 minutes.'</p>
+    @if (showExplanation)
+    {
+        <p style="color:#353535;">Try to guess the correct answer. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
     }
 </div>
+
 @code {
     private HubConnection? hubConnection;
     private QuestionModel currentQuestion = new QuestionModel();
@@ -49,16 +54,18 @@
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
             .Build();
-        hubConnection.On<string, string, List<string>>("Question",async (user, question, answers) =>
+
+        hubConnection.On<string, string, List<string>>("Question", async (user, question, answers) =>
        {
            gameStarted = true;
            var currentUser = await localStorage.GetItemAsStringAsync("User");
 
-           if (user == currentUser){
+           if (user == currentUser)
+           {
                showExplanation = false;
                currentQuestion.Question = question;
                if (answers.Count > 0)
-               {                   
+               {
                    currentQuestion.Answers = answers;
                }
                else
@@ -66,13 +73,17 @@
                    currentQuestion.Answers.Clear();
                }
            }
-           else {
+           else
+           {
                showExplanation = true;
                currentQuestion.Question = "";
            }
 
            StateHasChanged();
        });
+        hubConnection.On<string>("NextPageMessage", test => {
+            Navigation.NavigateTo("/");
+        });
         await hubConnection.StartAsync();
     }
 
@@ -84,7 +95,8 @@
         }
     }
 
-    private async Task SendMultipleChoiceAnswer(string answer){
+    private async Task SendMultipleChoiceAnswer(string answer)
+    {
         if (hubConnection is not null)
         {
             await hubConnection.SendAsync("SendAnswer", answer);

@@ -27,5 +27,21 @@ namespace Stalvin.Server.Hubs
         {
             await Clients.All.SendAsync("Answer", answer);
         }
+
+        public async Task GoToNextPage()
+        {
+            await Clients.All.SendAsync("NextPageMessage", "");
+        }
+
+        public async Task PictureAssignRole(string user, int index)
+        {
+            await Clients.All.SendAsync("PictureAssignRoleMessage", user, index);
+        }
+
+        public async Task NextPicture(int themeIndex, int pictureIndex)
+        {
+            await Clients.All.SendAsync("NextPictureMessage", themeIndex, pictureIndex);
+        }
+
     }
 }
