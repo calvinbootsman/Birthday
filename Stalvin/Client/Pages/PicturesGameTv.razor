@@ -1,0 +1,87 @@
+﻿@page "/game2TV"
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Timers
+@using Microsoft.Extensions.FileProviders
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<h3>PicturesGameTv</h3>
+<p style="color:#353535;">Every 5 seconds a new picture is shown on your mobile phones. Together they form one single picture. All the pictures have an overlapping theme. Try to guess the correct theme. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
+
+@code {
+    private System.Timers.Timer newPicTimer = new System.Timers.Timer(5000);
+    private HubConnection? hubConnection;
+    private string[] AnswerList ={ "oslo", "test", "hoi" };
+    private int themeIndex = 0;
+    private int pictureIndex = 0;
+    private int totalThemes = 0;
+
+    private List<string> users = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        StartTimer();
+
+        hubConnection = new HubConnectionBuilder()
+             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+             .Build();
+        hubConnection.On<string>("Answer", async (answer) =>
+        {
+            if (AnswerList[themeIndex] == answer)
+            {
+                themeIndex++;
+            }
+        });
+    }
+
+    private void StartTimer()
+    {
+        newPicTimer.Elapsed += OnTimedEvent;
+        newPicTimer.AutoReset = true;
+        newPicTimer.Enabled = true;
+    }
+
+    private void OnTimedEvent(Object? source, ElapsedEventArgs e)
+    {
+        NextPicture();
+
+    }
+
+    private async Task NextPicture() {
+        //imageSrc = $"/images/{AnswerList[themeIndex]}/{AnswerList[themeIndex]}-{pictureIndex}-{0}.png";
+        pictureIndex++;
+        if (pictureIndex == 4) pictureIndex = 0;
+        await hubConnection.SendAsync("NextPicture", themeIndex, pictureIndex);
+
+    }
+
+    private void NextTheme() {
+
+    }
+
+    private async Task InitUsers()
+    {
+        var keys = await localStorage.KeysAsync();
+        users.Clear();
+        int index = 0; 
+        foreach (string s in keys)
+        {
+            var value = await localStorage.GetItemAsStringAsync(s);
+            if (value == "added")
+            {                
+                users.Add(s);
+            }
+            await hubConnection.SendAsync("PictureAssignRole",s, index);
+            index++;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

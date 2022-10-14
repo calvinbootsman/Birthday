@@ -1,0 +1,41 @@
+﻿@page "/game2Client"
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Timers
+
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+<h3>PicturesGameClient</h3>
+
+@code {
+    private HubConnection? hubConnection;
+    private string thisUser = "";
+    private int thisIndex = -1;
+    protected override async Task OnInitializedAsync()
+    {     
+        thisUser = await localStorage.GetItemAsStringAsync("User");
+        hubConnection = new HubConnectionBuilder()
+             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+             .Build();
+        hubConnection.On<string, int>("PictureAssignRoleMessage", (user, index) =>
+        {
+            if (thisUser == user) {
+                thisIndex = index; 
+            }
+        });
+        hubConnection.On<string, int>("PictureAssignRoleMessage", (user, index) =>
+        {
+            if (thisUser == user) {
+                thisIndex = index; 
+            }
+        });
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}
