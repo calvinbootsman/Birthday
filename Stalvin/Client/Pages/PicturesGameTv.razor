@@ -14,7 +14,7 @@
 <TVClient @ref="client" />
 <h3>PicturesGameTv</h3>
 <p style="color:#353535;">Every 5 seconds a new picture is shown on your mobile phones. Together they form one single picture. All the pictures have an overlapping theme. Try to guess the correct theme. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
-
+<h1>@themeIndex/@totalThemes answered</h1>
 @code {
     private System.Timers.Timer newPicTimer = new System.Timers.Timer(5000);
     private HubConnection? hubConnection;
