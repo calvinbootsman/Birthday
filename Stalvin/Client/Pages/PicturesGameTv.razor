@@ -65,6 +65,7 @@
         });
         await hubConnection.StartAsync();
         await InitUsers();
+        totalThemes = AnswerList.Count();
     }
 
     private void StartTimer()
