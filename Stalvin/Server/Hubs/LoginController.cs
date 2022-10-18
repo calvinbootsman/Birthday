@@ -43,5 +43,14 @@ namespace Stalvin.Server.Hubs
             await Clients.All.SendAsync("NextPictureMessage", theme, pictureIndex);
         }
 
+        public async Task NextCharacter(string user, char c)
+        {
+            await Clients.All.SendAsync("NextCharacterMessage", user, c);
+        }
+
+        public async Task SecretAssignRole(string user)
+        {
+            await Clients.All.SendAsync("SecretAssignRoleMessage", user);
+        }
     }
 }

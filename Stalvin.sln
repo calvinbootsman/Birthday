@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stalvin.Client", "Stalvin\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stalvin.Shared", "Stalvin\Shared\Stalvin.Shared.csproj", "{5609888E-7074-42F5-9166-F2773D9C9BA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateImages", "GenerateImages\GenerateImages.csproj", "{053505F4-050E-4F5F-80FF-4372CC38B0D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateImages", "GenerateImages\GenerateImages.csproj", "{053505F4-050E-4F5F-80FF-4372CC38B0D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
