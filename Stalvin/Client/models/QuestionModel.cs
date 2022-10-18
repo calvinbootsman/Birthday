@@ -23,7 +23,7 @@
             questionList.Add(new QuestionModel { QuestionId = "10", Question = "In tennis, what piece of fruit is found at the top of the men’s Wimbledon trophy?", Answer = "Pineapple", Answers = { "Apple", "Orange",  "Pear", "Pineapple" } });
             questionList.Add(new QuestionModel { QuestionId = "11", Question = "What is the average male height in the netherlands (give your answer as: ###  e.g.: 152)", Answer = "183" });
             questionList.Add(new QuestionModel { QuestionId = "12", Question = "What is Calvin's height (give your answer as: ###  e.g.: 152)", Answer = "164" });
-            questionList.Add(new QuestionModel { QuestionId = "13", Question = "Which brand is Calvin's car", Answer = "Lancia", Answers = { "Dacia", "Fiat", "lancia", "Tesla" } });
+            questionList.Add(new QuestionModel { QuestionId = "13", Question = "Which brand is Calvin's car", Answer = "Lancia", Answers = { "Dacia", "Fiat", "Lancia", "Tesla" } });
             questionList.Add(new QuestionModel { QuestionId = "14", Question = "question15", Answer = "O" });
             questionList.Add(new QuestionModel { QuestionId = "15", Question = "question16", Answer = "P", Answers = { "answer a", "answer b", "answer c", "answer d" } });
             questionList.Add(new QuestionModel { QuestionId = "16", Question = "question17", Answer = "Q", Answers = { "answer a", "answer b" } });
