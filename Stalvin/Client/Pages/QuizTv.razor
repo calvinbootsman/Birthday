@@ -110,6 +110,10 @@
         }
         else
         {
+            if (hubConnection is not null)
+            {
+                await hubConnection.SendAsync("GoToNextPage");
+            }
             quizDone = true;
         }
     }
@@ -172,12 +176,8 @@
         backgroundColor = color;
     }
 
-    private async Task NextPage()
-    {
-        if (hubConnection is not null)
-        {
-            await hubConnection.SendAsync("GoToNextPage");
-        }
+    private void NextPage()
+    {       
         Navigation.NavigateTo("/game2TV");
     }
 }
