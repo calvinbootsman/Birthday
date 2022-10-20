@@ -52,5 +52,15 @@ namespace Stalvin.Server.Hubs
         {
             await Clients.All.SendAsync("SecretAssignRoleMessage", user);
         }
+
+        public async Task AddTime(int time)
+        {
+            await Clients.All.SendAsync("AddTimeMessage", time);
+        }
+
+        public async Task IsGameRunning(bool isRunning)
+        {
+            await Clients.All.SendAsync("IsGameRunningEvent", isRunning);
+        }
     }
 }
