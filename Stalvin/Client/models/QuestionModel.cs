@@ -24,16 +24,12 @@
             questionList.Add(new QuestionModel { QuestionId = "11", Question = "What is the average male height in the netherlands (give your answer as: ###  e.g.: 152)", Answer = "183" });
             questionList.Add(new QuestionModel { QuestionId = "12", Question = "What is Calvin's height (give your answer as: ###  e.g.: 152)", Answer = "164" });
             questionList.Add(new QuestionModel { QuestionId = "13", Question = "Which brand is Calvin's car", Answer = "Lancia", Answers = { "Dacia", "Fiat", "Lancia", "Tesla" } });
-            questionList.Add(new QuestionModel { QuestionId = "14", Question = "question15", Answer = "O" });
-            questionList.Add(new QuestionModel { QuestionId = "15", Question = "question16", Answer = "P", Answers = { "answer a", "answer b", "answer c", "answer d" } });
-            questionList.Add(new QuestionModel { QuestionId = "16", Question = "question17", Answer = "Q", Answers = { "answer a", "answer b" } });
-            questionList.Add(new QuestionModel { QuestionId = "17", Question = "question18", Answer = "R" });
-            questionList.Add(new QuestionModel { QuestionId = "18", Question = "question19", Answer = "S" });
-            questionList.Add(new QuestionModel { QuestionId = "19", Question = "question20", Answer = "T", Answers = { "answer a", "answer b", "answer c" } });
-            questionList.Add(new QuestionModel { QuestionId = "20", Question = "question21", Answer = "U" });
-            questionList.Add(new QuestionModel { QuestionId = "21", Question = "question22", Answer = "V", Answers = { "answer a", "answer b", "answer c", "answer d" } });
-            questionList.Add(new QuestionModel { QuestionId = "22", Question = "question23", Answer = "W", Answers = { "answer a", "answer b" } });
-            questionList.Add(new QuestionModel { QuestionId = "23", Question = "question24", Answer = "X" });
+            questionList.Add(new QuestionModel { QuestionId = "14", Question = "What is Calvin's favorite sex position", Answer = "Missionary", Answers = { "Missionary", "Doggy", "Cow girl" } });
+            questionList.Add(new QuestionModel { QuestionId = "15", Question = "What is the capiptal of Australia", Answer = "Canberry", Answers = { "Perth", "Sydney", "Canbery", "Melbourne" } });
+            questionList.Add(new QuestionModel { QuestionId = "16", Question = "I have a mouth, but I can't speak. I have a bed, but I won't sleep. I can run, but don't have legs. What am I? (single word answer)", Answer = "river" });
+            questionList.Add(new QuestionModel { QuestionId = "17", Question = "What year did the first Star Wars film come out in theaters? ", Answer = "1977",  Answers = {"1973", "1975", "1977", "1979" } });
+            questionList.Add(new QuestionModel { QuestionId = "18", Question = "Which chess piece can move the most spaces in any direction? ", Answer = "The queen", Answers = {"The rook", "The knight", "The king", "The queen" } });
+            questionList.Add(new QuestionModel { QuestionId = "19", Question = "What is the most populated city in Europe", Answer = "Istanbul", Answers = { "Istanbul", "London", "Moscow", "Paris" } });
             return questionList;
         }
     }
