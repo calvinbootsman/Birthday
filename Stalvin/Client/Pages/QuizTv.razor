@@ -54,10 +54,14 @@
            {
                if (question.Answer.ToUpper() == answer.ToUpper())
                {
+                   if (client is not null)
+                        client.PlaySound("correct");
                    AnimateBackground("linear-gradient(180deg, rgba(105,187,88,1) 0%, rgba(139,255,115,1) 100%);");
                }
                else
                {
+                   if (client is not null)
+                       client.PlaySound("wrong");
                    AnimateBackground("linear-gradient(180deg, rgba(187,88,88,1) 0%, rgba(255,115,115,1) 100%);");
 
                    if (client is not null)
