@@ -62,5 +62,10 @@ namespace Stalvin.Server.Hubs
         {
             await Clients.All.SendAsync("IsGameRunningEvent", isRunning);
         }
+
+        public async Task NextChallenge()
+        {
+            await Clients.All.SendAsync("NextChallengeMessage", "yo");
+        }
     }
 }

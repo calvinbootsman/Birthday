@@ -1,0 +1,38 @@
+﻿@page "/game4TV"
+@using Microsoft.AspNetCore.SignalR.Client
+@using models
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@implements IAsyncDisposable
+
+<h1>Challenges</h1>
+<p>There are multiple camera's throughout the appartment. We will view all your challenges and then decide if you succesfuly completed them. If we think you completed a challenge, you automatically get to the next one.</p>
+
+@code {
+    private HubConnection? hubConnection;
+    private List<ChallengeModel> challenges = new List<ChallengeModel>();
+    private int challengeIndex = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        challenges = ChallengeModel.GetChallenges();
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
+            .Build();
+        hubConnection.On<string>("NextChallengeMessage", s =>
+       {
+           challengeIndex++;
+           if (challengeIndex > challenges.Count()) {
+               Navigation.NavigateTo("/game1TV");
+           }
+       });
+        await hubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}
