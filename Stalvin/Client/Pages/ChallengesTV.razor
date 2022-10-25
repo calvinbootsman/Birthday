@@ -5,9 +5,12 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IAsyncDisposable
 
-<h1>Challenges</h1>
+<h3>Challenges</h3>
 <p>There are multiple camera's throughout the appartment. We will view all your challenges and then decide if you succesfuly completed them. If we think you completed a challenge, you automatically get to the next one.</p>
-
+@if (challenges.Count()>0){
+    <title>@challenges[challengeIndex].Challenge</title>
+    <p>@challenges[challengeIndex].Description</p>
+}
 @code {
     private HubConnection? hubConnection;
     private List<ChallengeModel> challenges = new List<ChallengeModel>();
@@ -19,12 +22,23 @@
             .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
             .Build();
         hubConnection.On<string>("NextChallengeMessage", s =>
-       {
-           challengeIndex++;
-           if (challengeIndex > challenges.Count()) {
-               Navigation.NavigateTo("/game1TV");
-           }
-       });
+        {
+            challengeIndex++;
+            if (challengeIndex == challenges.Count())
+            {
+                Navigation.NavigateTo("/game1TV");
+            }
+            StateHasChanged();
+        });
+        hubConnection.On<string>("PreviousChallengeMessage", s =>
+        {
+            challengeIndex--;
+            if (challengeIndex == -1)
+            {
+                Navigation.NavigateTo("/game1TV");
+            }
+            StateHasChanged();
+        });
         await hubConnection.StartAsync();
     }
 

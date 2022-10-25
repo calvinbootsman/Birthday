@@ -12,6 +12,10 @@
     <button @onclick="PauseGameEvent">Pause</button>
     <button @onclick="ResumeGameEvent">Resume</button>
 </div>
+<div vertical orientation>
+    <button @onclick="PreviousChallengeEvent">Previous challenge</button>
+    <button @onclick="NextChallengeEvent">Next challenge</button>
+</div>
 @code {
     private HubConnection? hubConnection;
     private string AddTimeString = "";
@@ -46,6 +50,23 @@
             await hubConnection.SendAsync("IsGameRunning", true);
         }
     }
+
+    private async Task PreviousChallengeEvent()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("PreviousChallenge");
+        }
+    }
+
+    private async Task NextChallengeEvent()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("NextChallenge");
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (hubConnection is not null)

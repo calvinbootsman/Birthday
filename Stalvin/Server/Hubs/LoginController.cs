@@ -67,5 +67,9 @@ namespace Stalvin.Server.Hubs
         {
             await Clients.All.SendAsync("NextChallengeMessage", "yo");
         }
+        public async Task PreviousChallenge()
+        {
+            await Clients.All.SendAsync("PreviousChallengeMessage", "yo");
+        }
     }
 }
