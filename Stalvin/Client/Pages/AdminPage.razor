@@ -8,17 +8,26 @@
     <input type="text" @bind="AddTimeString"/>
     <button @onclick="AddTimeEvent">Send</button>
 </div>
+<br/>
 <div vertical orientation>
     <button @onclick="PauseGameEvent">Pause</button>
     <button @onclick="ResumeGameEvent">Resume</button>
 </div>
+<br/>
 <div vertical orientation>
     <button @onclick="PreviousChallengeEvent">Previous challenge</button>
     <button @onclick="NextChallengeEvent">Next challenge</button>
 </div>
+<br/>
+<div vertical orientation>
+    <label>Set show label index</label>
+    <input type="text" @bind="SetLabelIndexString" />
+    <button @onclick="SetLabelIndexEvent">Send</button>
+</div>
 @code {
     private HubConnection? hubConnection;
     private string AddTimeString = "";
+    private string SetLabelIndexString = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,6 +73,14 @@
         if (hubConnection is not null)
         {
             await hubConnection.SendAsync("NextChallenge");
+        }
+    }
+
+    private async Task SetLabelIndexEvent() {
+        int index = Convert.ToInt32(SetLabelIndexString);
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SetLabel", index);
         }
     }
 

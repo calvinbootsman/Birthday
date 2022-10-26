@@ -71,5 +71,9 @@ namespace Stalvin.Server.Hubs
         {
             await Clients.All.SendAsync("PreviousChallengeMessage", "yo");
         }
+        public async Task SetLabel(int index)
+        {
+            await Clients.All.SendAsync("SetLabelMessage", index);
+        }
     }
 }
