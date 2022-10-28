@@ -6,37 +6,43 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <div style="text-align:center">
-    @if (gameStarted)
-    {
-        <h3>Quiz!</h3>
-
-        @if (currentQuestion.Question != "")
+  @if (nextGame == false) {
+        @if (gameStarted)
         {
-            <h4>@currentQuestion.Question</h4>
-            @if (currentQuestion.Answers.Count() > 0)
+            <h3>Quiz!</h3>
+
+            @if (currentQuestion.Question != "")
             {
-                @foreach (string s in currentQuestion.Answers)
+                <h4>@currentQuestion.Question</h4>
+                @if (currentQuestion.Answers.Count() > 0)
                 {
-                    <div class="card" style="width: 25rem">
-                        <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
-                    </div>
+                    @foreach (string s in currentQuestion.Answers)
+                    {
+                        <div class="card" style="width: 25rem">
+                            <button class="btn btn-primary" @onclick="() => SendMultipleChoiceAnswer(s)">@s</button>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <input type="text" @bind="textAnswer" />
+                    <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
                 }
             }
-            else
-            {
-                <input type="text" @bind="textAnswer" />
-                <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
-            }
         }
-    }
-    else
-    {
-        <h1 style="text-align:center;">Waiting for game to start</h1>
-    }
+        else
+        {
+            <h1 style="text-align:center;">Waiting for game to start</h1>
+        }
 
-    @if (showExplanation)
-    {
-        <p style="color:#353535;">Try to guess the correct answer. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
+        @if (showExplanation)
+        {
+            <p style="color:#353535;">Try to guess the correct answer. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
+        }
+  }   
+
+    @if (nextGame) {
+        <button @onclick="NextPage" class="btn btn-primary">Next page</button>
     }
 </div>
 
@@ -47,7 +53,7 @@
     private string textAnswer = "";
     private bool gameStarted = false;
     private bool showExplanation = true;
-
+    private bool nextGame = false;
     protected override async Task OnInitializedAsync()
     {
         thisUser = await localStorage.GetItemAsStringAsync("User");
@@ -82,7 +88,7 @@
            StateHasChanged();
        });
         hubConnection.On<string>("NextPageMessage", test => {
-            Navigation.NavigateTo("/game2Client");
+            nextGame = true;
         });
         await hubConnection.StartAsync();
     }
@@ -109,5 +115,10 @@
         {
             await hubConnection.SendAsync("SendAnswer", textAnswer);
         }
+    }
+
+    private void NextPage()
+    {
+        Navigation.NavigateTo("/game2Client");
     }
 }

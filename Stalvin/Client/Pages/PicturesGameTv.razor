@@ -87,6 +87,7 @@
 
     private async Task NextPicture()
     {
+        await InitUsers();
         pictureIndex++;
         if (pictureIndex == 4) pictureIndex = 0;
         if (hubConnection is not null)
