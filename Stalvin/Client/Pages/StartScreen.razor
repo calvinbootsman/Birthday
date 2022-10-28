@@ -9,7 +9,6 @@
 {
     <p>@s</p>
 }
-<Login/>
 
 <button @onclick="TVClientPage">Start!</button>
 
@@ -67,6 +66,7 @@
 
         await localStorage.SetItemAsStringAsync("Start time", currenTime.ToUnixTimeSeconds().ToString());
         await localStorage.SetItemAsStringAsync("Current game", "game 1");
+        await localStorage.SetItemAsStringAsync("gameDuration", "3600");
         Navigation.NavigateTo("/game1TV");
     }
 }

@@ -5,6 +5,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IAsyncDisposable
 
+<TVClient @ref="client" />
 <h3>Challenges</h3>
 <p>There are multiple camera's throughout the appartment. We will view all your challenges and then decide if you succesfuly completed them. If we think you completed a challenge, you automatically get to the next one.</p>
 @if (challenges.Count()>0){

@@ -5,7 +5,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IAsyncDisposable
 
-<div style="text-align:center;">
+<div style="text-align:center; margin-top:50px;">
     <PageTitle>Remaining Time</PageTitle>
     
     @if (sambucaAlarm) {
@@ -53,7 +53,7 @@
  else {
 
  }
- <AdminPage/>
+
 @code {
     private TimeSpan startTime;
     private System.Timers.Timer aTimer = new System.Timers.Timer(10);
