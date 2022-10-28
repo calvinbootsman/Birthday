@@ -5,54 +5,69 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @implements IAsyncDisposable
 
-<div style="text-align:center; margin-top:50px;">
-    <PageTitle>Remaining Time</PageTitle>
-    
-    @if (sambucaAlarm) {
-        <h1>SAMBUCA ALARM!!!1!1!!!</h1>
-        <audio autoplay src="/sounds/sambucaAlarm.mp3"/>        
-    } 
+@if (showVideo == false) {
+    <div style="text-align:center; margin-top:50px;">
+        <PageTitle>Remaining Time</PageTitle>
+
+        @if (sambucaAlarm)
+        {
+            <h1>SAMBUCA ALARM!!!1!1!!!</h1>
+            <audio autoplay src="/sounds/sambucaAlarm.mp3" />
+        }
+        else
+        {
+            <h1 role="status">remaining time: @String.Format(@"{0:mm\:ss\.ff}", startTime)</h1>
+            @if (showLabelIndex < 3)
+            {
+                <div style="width:200px; position:fixed; bottom:100px; right:50px; text-align:left;">
+                    <label>In case you run out of time, you can request for more time. The max amount of time is 15 minutes.</label>
+                    <button @onclick="AskForTime" class="btn btn-primary">Ask for extra time.</button>
+                </div>
+            }
+        }
+    </div>
+    @if (showLabel)
+    {
+        <div class="card" style="position:fixed; width:200px; left: 50%; top: 50%; transform: translate(-50%, -50%);">
+            <div class="card-body">
+                @if (showLabelIndex == 0)
+                {
+                    <label>We will give Stalvin a little bit of antidote, which will give you 5 extra minutes. IF someone will chug a beer right now.</label>
+                }
+                @if (showLabelIndex == 1)
+                {
+                    <label>We will give Stalvin a little bit of antidote, which will give you 5 extra minutes. IF someone will chug a beer right now.</label>
+                }
+                @if (showLabelIndex == 2)
+                {
+                    <label>We will give Stalvin a little bit of antidote, which will give you 5 extra minutes. IF someone will chug a beer right now.</label>
+                }
+                @if (showLabelIndex == 3)
+                {
+                    <label>NO MORE EXTRA TIME!</label>
+                }
+                <button class="btn btn-primary" @onclick="HideCard">close</button>
+            </div>
+        </div>
+    }
+
+    @if (playSound == "correct")
+    {
+        <audio autoplay src="/sounds/correctAnswer.mp3" />
+    }
+    else if (playSound == "wrong")
+    {
+        <audio autoplay src="/sounds/wrongAnswer.mp3" />
+    }
     else
     {
-        <h1 role="status">remaining time: @String.Format(@"{0:mm\:ss\.ff}", startTime)</h1>
-        @if (showLabelIndex < 3) {
-            <div style="width:200px; position:fixed; bottom:100px; right:50px; text-align:left;">
-                <label>In case you run out of time, you can request for more time. The max amount of time is 15 minutes.</label>
-                <button @onclick="AskForTime" class="btn btn-primary">Ask for extra time.</button>
-            </div>
-        }        
+
     }
-</div>
-@if (showLabel)
-{
-    <div class="card" style="position:fixed; width:200px; left: 50%; top: 50%; transform: translate(-50%, -50%);">
-        <div class="card-body">
-            @if (showLabelIndex == 0) {
-                <label>We will give Stalvin a little bit of antidote, which will give you 5 extra minutes. IF someone will chug a beer right now.</label>
-            }
-            @if (showLabelIndex == 1) {
-                <label>We will give Stalvin a little bit of antidote, which will give you 5 extra minutes. IF someone will chug a beer right now.</label>
-            }
-            @if (showLabelIndex == 2) {
-                <label>We will give Stalvin a little bit of antidote, which will give you 5 extra minutes. IF someone will chug a beer right now.</label>
-            }
-            @if (showLabelIndex == 3) {
-            <label>NO MORE EXTRA TIME!</label>
-            }
-            <button class="btn btn-primary" @onclick="HideCard">close</button>
-        </div>
-    </div>
+}
+else {
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/ZDUdwP9kK80" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 }
 
- @if (playSound == "correct") {
-     <audio autoplay src="/sounds/correctAnswer.mp3" />
- } 
- else if (playSound == "wrong") {
-    <audio autoplay src="/sounds/wrongAnswer.mp3" />
- }
- else {
-
- }
 
 @code {
     private TimeSpan startTime;
@@ -66,7 +81,7 @@
     private bool isGameRunning = false;
     private bool showLabel = false;
     private int showLabelIndex = 0;
-
+    private bool showVideo = false;
     // Hook up the Elapsed event for the timer.
 
     public void PlaySound(string s) {
@@ -111,9 +126,14 @@
 
     private void OnTimedEvent(Object? source, ElapsedEventArgs e)
     {
-        if (isGameRunning)
-            startTime = startTime.Subtract(new TimeSpan(0, 0, 0, 0, 10));
+        if (showVideo == false) {
+            if (isGameRunning)
+                startTime = startTime.Subtract(new TimeSpan(0, 0, 0, 0, 10));
+        }       
 
+        if (startTime == new TimeSpan(0,0,0,0,0)){
+            showVideo = true;
+        }
         this.StateHasChanged();
     }
 
