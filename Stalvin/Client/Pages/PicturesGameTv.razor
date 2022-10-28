@@ -105,12 +105,14 @@
             var value = await localStorage.GetItemAsStringAsync(s);
             if (value == "added")
             {
+                Console.WriteLine($"added {s} with index: {index}");
                 users.Add(s);
                 if (hubConnection is not null)
                     await hubConnection.SendAsync("PictureAssignRole", s, index);
+                index++;
             }
             
-            index++;
+            
         }
     }
 
