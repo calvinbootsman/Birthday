@@ -6,10 +6,10 @@
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-@if (thisIndex >= 0 && thisIndex < 6) {
+@if (thisIndex >= 1 && thisIndex <= 6) {
     <img src="@imageSrc" alt="" style="display:block; width:100%"  />
 }
-@if (thisIndex == 6) {
+@if (thisIndex == 0) {
     <input type="text" @bind="textAnswer" />
     <button class="btn btn-primary" @onclick="SendTextAnswer">send</button>
     <p style="color:#353535;">Try to guess the correct answer. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>

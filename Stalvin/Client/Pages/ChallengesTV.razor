@@ -16,6 +16,7 @@
     private HubConnection? hubConnection;
     private List<ChallengeModel> challenges = new List<ChallengeModel>();
     private int challengeIndex = 0;
+    TVClient? client = new TVClient();
     protected override async Task OnInitializedAsync()
     {
         challenges = ChallengeModel.GetChallenges();
