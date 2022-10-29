@@ -12,7 +12,8 @@
             challenges.Add(new ChallengeModel { Challenge = "Solve a rubiks cube", Description = "" });
             challenges.Add(new ChallengeModel { Challenge = "play the ball 10 times", Description = "Pass the ball 10 times to each other using the beach tennis rackets" });
             challenges.Add(new ChallengeModel { Challenge = "Build a card house", Description = "It has to be 2 high, so with a base of 2 pairs. Multiple people can join." });
-            challenges.Add(new ChallengeModel { Challenge = "Weighing game", Description = "Play the weighing game until the time is up. lol." });
+            challenges.Add(new ChallengeModel { Challenge = "Ho shi ha!!!!!", Description = "Play ho shi ha. If you beat Calvin, you'll get 5 additional minutes." });
+            challenges.Add(new ChallengeModel { Challenge = "Weighing game", Description = "Play 5 rounds of the weighing game" });
             return challenges;
         }
 

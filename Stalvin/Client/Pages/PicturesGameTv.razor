@@ -15,10 +15,11 @@
 <h3>PicturesGameTv</h3>
 <p style="color:#353535;">Every 5 seconds a new picture is shown on your mobile phones. Together they form one single picture. All the pictures have an overlapping theme. Try to guess the correct theme. The answer is capital insensitive. For every wrong answer theres a penalty of 5 minutes.'</p>
 <h1>@themeIndex/@totalThemes answered</h1>
+
 @code {
     private System.Timers.Timer newPicTimer = new System.Timers.Timer(5000);
     private HubConnection? hubConnection;
-    public string[] AnswerList = { "oslo", "bukahara", "groningen" };
+    public string[] AnswerList = { "oslo" }; //"bukahara", "groningen" };
     private int themeIndex = 0;
     private int pictureIndex = 0;
     private int totalThemes = 1;
@@ -33,26 +34,25 @@
         hubConnection = new HubConnectionBuilder()
              .WithUrl(Navigation.ToAbsoluteUri("/logincontroller"))
              .Build();
-        hubConnection.On<string>("Answer", async (answer) =>
+        hubConnection.On<string>("Answer", (answer) =>
         {
-            // correct answer
-            if (AnswerList[themeIndex] == answer)
-            {
-                if (client is not null)
-                    client.PlaySound("correct");
-                AnimateBackground("linear-gradient(180deg, rgba(105,187,88,1) 0%, rgba(139,255,115,1) 100%);");
+        // correct answer
+        if (AnswerList[themeIndex] == answer)
+        {
+            if (client is not null)
+                client.PlaySound("correct");
+            AnimateBackground("linear-gradient(180deg, rgba(105,187,88,1) 0%, rgba(139,255,115,1) 100%);");
 
-                themeIndex++;
+            themeIndex++;
 
-                if (themeIndex == totalThemes)
+            if (themeIndex == totalThemes)
                 {
                     if (hubConnection is not null)
                     {
-                        await hubConnection.SendAsync("GoToNextPage");
-                    }
-                    Navigation.NavigateTo("/game3TV");
+                        Task newTask = hubConnection.SendAsync("GoToNextPage").ContinueWith(t => Navigation.NavigateTo("/game3TV"));
+                        newTask.Wait();
+                    }                    
                 }
-
             }
             // incorrect answer
             else
@@ -81,8 +81,9 @@
 
     private async void OnTimedEvent(Object? source, ElapsedEventArgs e)
     {
-        await NextPicture();
-
+        if (themeIndex < totalThemes) {
+            await NextPicture();
+        }
     }
 
     private async Task NextPicture()
@@ -111,8 +112,6 @@
                     await hubConnection.SendAsync("PictureAssignRole", s, index);
                 index++;
             }
-            
-            
         }
     }
 

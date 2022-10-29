@@ -52,7 +52,9 @@
         });
         hubConnection.On<string>("NextPageMessage", test =>
         {
+            Navigation.NavigateTo("/game3Client");
             nextGame = true;
+            StateHasChanged();
 
         });
         await hubConnection.StartAsync();

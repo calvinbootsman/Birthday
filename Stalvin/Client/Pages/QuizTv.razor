@@ -144,6 +144,10 @@
                 }
                 else
                 {
+                    if (hubConnection is not null)
+                    {
+                        await hubConnection.SendAsync("GoToNextPage");
+                    }
                     quizDone = true;
                     break;
                 }
@@ -155,6 +159,10 @@
         }
         else
         {
+            if (hubConnection is not null)
+            {
+                await hubConnection.SendAsync("GoToNextPage");
+            }
             quizDone = true;
         }
         return "";
