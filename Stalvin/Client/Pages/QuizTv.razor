@@ -17,6 +17,7 @@
     {
         <h2>@question.Question;</h2>
         <h4>question @answeredQuestions/@totalQuestion</h4>
+        <button @onclick="ResendQuestion">resend question</button>
     }
 </div>
 @if (quizDone)
@@ -183,7 +184,18 @@
         t.Enabled = true;
         backgroundColor = color;
     }
-
+    private async Task ResendQuestion(){
+        if (question != null)
+        {
+            string user = await GetRandomUser();
+            user = user.Remove(user.Length - 1);
+            if (hubConnection is not null)
+            {
+                await hubConnection.SendAsync("SendQuestion", user, question.Question, question.Answers);
+            }
+        }
+    }
+    
     private void NextPage()
     {       
         Navigation.NavigateTo("/game2TV");
